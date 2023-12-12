@@ -63,6 +63,12 @@ p {
   padding: 0;
 }
 
+p {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 #pads {
   width: 370px;
   height: 400px;
@@ -83,7 +89,11 @@ p {
   justify-content: center;
   border-radius: 5px;
   background-color: rgb(62, 62, 63);
-  box-shadow: 5px 5px 5px black; /*Swap box shadow to -3px -2px 2px black when clicked*/
+  box-shadow: 5px 5px 5px black; 
+}
+
+.drum-pad:hover, .drum-pad p:hover {
+  cursor: pointer;
 }
 
 .drum-pad-click {
@@ -126,7 +136,6 @@ p {
   height: 30px;
   background-color: black;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   border: 5px solid black;
 
@@ -136,6 +145,10 @@ p {
   width: 48%;
   height: 98%;
   background-color: var(--sec-color); 
+}
+
+#power-button:hover {
+  cursor: pointer;
 }
 
 #screen {
@@ -153,29 +166,46 @@ p {
   color: lightgreen;
 }
 
-#volume {
-  width: 100%;
-  height: 50px;
-}
 
-#volume-bar {
-  height: 0;
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;  
+  background: transparent;
+  cursor: pointer;
   width: 90%;
-  border: 5px solid black;
-  border-left: 0;
-  border-right: 0;
-  margin: auto;
-}
-
-#volume-slider {
-  width: 20px;
-  height: 30px;
-  background-color: var(--sec-color);
   position: relative;
   top: -14px;
-  /*Ranges from 0% to 95%*/
-  left: 0%;
+  outline: none;
 }
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: black;
+  height: 0.5rem;
+}
+
+input[type="range"]::-moz-range-track {
+  background: black;
+  height: 0.5rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2rem;
+  width: 30px;
+  background: var(--sec-color);
+  margin-top: -12px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  border: none;
+  border-radius: none;
+  height: 2rem;
+  width: 30px;
+  background: var(--sec-color);
+  margin-top: -12px;
+}
+
 
 /*Mobile version*/
 @media only screen and (max-width: 900px){

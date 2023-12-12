@@ -1,7 +1,53 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
+import { useSelector,useDispatch } from 'react-redux';
+import {
+  padPress, 
+  powerToggle, 
+  resetDisplay, 
+  changeVol
+} from './features/display/displaySlice';
 
 function App() {
+  //variables and state
+  const dispatch = useDispatch();
+  const text = useSelector((state) => (state.display.text));
+  const powerStatus = useSelector((state) => state.display.power);
+  const volume = useSelector((state) => state.display.volume);
+  
+  //Set the initial position of the slider
+  //document.getElementById('volume-slider').style.left = '0%';
+  
+  
+
+  useEffect(() =>{
+    document.getElementById('power-switch').style.justifyContent = powerStatus ? 'flex-end' : 'flex-start';
+  });
+
+ 
+  function handleOnChange(e) {
+    if(powerStatus){
+      dispatch(padPress('Volume: ' + e.target.value.toString()))
+    }
+    dispatch(changeVol(e.target.value/100))
+  }
+
+  function handleMouseUp(){
+    dispatch(resetDisplay());
+  }
+    
+
+
+  function handlePowerToggle() {
+    
+    dispatch(powerToggle())
+
+    dispatch(padPress(powerStatus ? 'Power Off': 'Power On'))
+
+    setTimeout(()=>{
+      dispatch(resetDisplay());  
+    },500);
+  }
   
   //If key pressed, play the audio, render the instrument text to the screen
   //and depress the button
@@ -10,23 +56,28 @@ function App() {
     
     //Get the pad id
     let id = [...e.currentTarget.id].join('');
-    console.log(id)
-    new Audio(src).play(); 
-    console.log(e);
-    e.currentTarget.style.boxShadow = '-3px -2px 2px black';
     
-    setTimeout(()=>{
-      document.getElementById(id).style.boxShadow = '5px 5px 5px black';  
-    },300);
+    if(powerStatus){
+      let audio = new Audio(src);
+      audio.volume = volume;
+      audio.play();
+      dispatch(padPress(id));
+    } 
+      e.currentTarget.style.boxShadow = '-3px -2px 2px black';
+
+      setTimeout(()=>{
+        document.getElementById(id).style.boxShadow = '5px 5px 5px black';
+        dispatch(resetDisplay());  
+      },300);
+    
+
   }
 
   function handleKeyPress(e){
     let id = '';
-    console.log('working');
     switch(e.key){
       case 'q':
         id = 'heater-1';
-        console.log(id);
         break;
       case 'w':
         id = 'heater-2';
@@ -56,16 +107,24 @@ function App() {
         return 0;
     }
 
-    console.log(id);
+    
 
     let src = document.getElementById(id).getElementsByClassName("clip")[0].src;
-    new Audio(src).play(); 
+    if(powerStatus){
+      let audio = new Audio(src);
+      audio.volume = volume;
+      audio.play();
+      dispatch(padPress(id));
+    }
+     
     document.getElementById(id).style.boxShadow = '-3px -2px 2px black';
 
     setTimeout(()=>{
-      document.getElementById(id).style.boxShadow = '5px 5px 5px black';  
+      document.getElementById(id).style.boxShadow = '5px 5px 5px black';
+      dispatch(resetDisplay());   
     },300);
   }
+
   
   return (
     <div className="App" onKeyDown={handleKeyPress} tabIndex="0">
@@ -117,21 +176,15 @@ function App() {
             <div id="power">
               <p>Power</p>
               <div id="power-switch">
-                <div id="power-button">
+                <div id="power-button" onClick={handlePowerToggle}>
 
                 </div>
               </div>
             </div>
             <div id="screen">
-              <p>Audio Label</p>
+              <p>{text}</p>
             </div>
-            <div id="volume">
-              <div id="volume-bar">
-                <div id="volume-slider">
-
-                </div>
-              </div>
-            </div>
+            <input id="slider" type="range" value={volume*100} onChange={handleOnChange} onMouseUp={handleMouseUp}/>
           </div>  
         </div>
       </div>  
